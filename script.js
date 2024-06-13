@@ -13,4 +13,9 @@ document.addEventListener("DOMContentLoaded", function() {
     } else {
         document.getElementById("memory").innerText = "Not available";
     }
+
+    // Get screen resolution
+    var screenWidth = window.screen.width;
+    var screenHeight = window.screen.height;
+    document.getElementById("resolution").innerText = screenWidth + " x " + screenHeight;
 });
