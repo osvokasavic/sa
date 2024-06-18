@@ -1,96 +1,111 @@
-const mazeSize = 10;
-const maze = [];
-let playerPosition = { x: 0, y: 0 };
-let keysCollected = 0;
+const questions = [
+    {
+        type: "select",
+        question: "What are the primary colors?",
+        options: [
+            { text: "Red", correct: true },
+            { text: "Blue", correct: true },
+            { text: "Green", correct: false },
+            { text: "Yellow", correct: true },
+        ]
+    },
+    {
+        type: "type",
+        question: "What is the capital of France?",
+        correctAnswers: ["Paris"]
+    },
+    // Add more question objects here
+];
 
-document.addEventListener('DOMContentLoaded', () => {
-    createMaze();
-    renderMaze();
-});
+let selectedQuestions = [];
 
-function createMaze() {
-    for (let y = 0; y < mazeSize; y++) {
-        const row = [];
-        for (let x = 0; x < mazeSize; x++) {
-            if (x === 0 && y === 0) {
-                row.push('start');
-            } else if (x === mazeSize - 1 && y === mazeSize - 1) {
-                row.push('end');
-            } else {
-                const isWall = Math.random() < 0.2;
-                row.push(isWall ? 'wall' : 'path');
-            }
-        }
-        maze.push(row);
-    }
-    // Place keys at random positions
-    const numberOfKeys = 5;
-    for (let i = 0; i < numberOfKeys; i++) {
-        let keyPlaced = false;
-        while (!keyPlaced) {
-            const x = Math.floor(Math.random() * mazeSize);
-            const y = Math.floor(Math.random() * mazeSize);
-            if (maze[y][x] === 'path') {
-                maze[y][x] = 'key';
-                keyPlaced = true;
-            }
+function initializeQuiz() {
+    const questionsContainer = document.getElementById('questions-container');
+
+    while (selectedQuestions.length < 20) {
+        const randomIndex = Math.floor(Math.random() * questions.length);
+        const question = questions[randomIndex];
+        if (!selectedQuestions.includes(question)) {
+            selectedQuestions.push(question);
         }
     }
-}
 
-function renderMaze() {
-    const mazeContainer = document.getElementById('maze');
-    mazeContainer.innerHTML = '';
-    for (let y = 0; y < mazeSize; y++) {
-        for (let x = 0; x < mazeSize; x++) {
-            const cell = document.createElement('div');
-            cell.className = `cell ${maze[y][x]}`;
-            if (x === playerPosition.x && y === playerPosition.y) {
-                cell.innerHTML = 'P';
-            } else if (maze[y][x] === 'key') {
-                cell.innerHTML = 'K';
-            }
-            mazeContainer.appendChild(cell);
+    selectedQuestions.forEach((q, index) => {
+        const questionDiv = document.createElement('div');
+        questionDiv.classList.add('question');
+
+        const questionLabel = document.createElement('label');
+        questionLabel.innerText = `${index + 1}. ${q.question}`;
+        questionDiv.appendChild(questionLabel);
+
+        if (q.type === "select") {
+            q.options.forEach((option, optIndex) => {
+                const optionDiv = document.createElement('div');
+                const optionInput = document.createElement('input');
+                optionInput.type = 'checkbox';
+                optionInput.id = `q${index}_o${optIndex}`;
+                optionInput.name = `q${index}`;
+                optionInput.value = option.text;
+
+                const optionLabel = document.createElement('label');
+                optionLabel.htmlFor = `q${index}_o${optIndex}`;
+                optionLabel.innerText = option.text;
+
+                optionDiv.appendChild(optionInput);
+                optionDiv.appendChild(optionLabel);
+                questionDiv.appendChild(optionDiv);
+            });
+        } else if (q.type === "type") {
+            const answerInput = document.createElement('input');
+            answerInput.type = 'text';
+            answerInput.id = `q${index}_input`;
+            questionDiv.appendChild(answerInput);
         }
-    }
+
+        questionsContainer.appendChild(questionDiv);
+    });
 }
 
-function movePlayer(direction) {
-    const { x, y } = playerPosition;
-    let newX = x;
-    let newY = y;
+function endQuiz() {
+    const form = document.getElementById('quiz-form');
+    let score = 0;
 
-    if (direction === 'up' && y > 0) newY -= 1;
-    if (direction === 'down' && y < mazeSize - 1) newY += 1;
-    if (direction === 'left' && x > 0) newX -= 1;
-    if (direction === 'right' && x < mazeSize - 1) newX += 1;
+    selectedQuestions.forEach((q, index) => {
+        let questionScore = 0;
 
-    if (maze[newY][newX] !== 'wall') {
-        playerPosition = { x: newX, y: newY };
-        if (maze[newY][newX] === 'key') {
-            keysCollected += 1;
-            document.getElementById('keys-count').textContent = keysCollected;
-            maze[newY][newX] = 'path';
+        if (q.type === "select") {
+            const selectedOptions = document.querySelectorAll(`input[name="q${index}"]:checked`);
+            const selectedValues = Array.from(selectedOptions).map(option => option.value);
+
+            const correctOptions = q.options.filter(opt => opt.correct).map(opt => opt.text);
+            const isCorrect = selectedValues.length === correctOptions.length &&
+                selectedValues.every(val => correctOptions.includes(val));
+
+            questionScore = isCorrect ? 1 : 0;
+
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add(isCorrect ? 'correct' : 'incorrect');
+            questionDiv.innerText = `${index + 1}. ${q.question} - Correct: ${correctOptions.join(', ')}`;
+            document.getElementById('result-container').appendChild(questionDiv);
+
+        } else if (q.type === "type") {
+            const userAnswer = document.getElementById(`q${index}_input`).value.trim().toLowerCase();
+            const isCorrect = q.correctAnswers.map(ans => ans.toLowerCase()).includes(userAnswer);
+
+            questionScore = isCorrect ? 1 : 0;
+
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add(isCorrect ? 'correct' : 'incorrect');
+            questionDiv.innerText = `${index + 1}. ${q.question} - Correct: ${q.correctAnswers.join(', ')}`;
+            document.getElementById('result-container').appendChild(questionDiv);
         }
-        if (maze[newY][newX] === 'end') {
-            alert(`Congratulations! You collected ${keysCollected} keys.`);
-            restartGame();
-        }
-        renderMaze();
-    }
+
+        score += questionScore;
+    });
+
+    const scoreDiv = document.createElement('div');
+    scoreDiv.innerText = `Your final score is: ${score}`;
+    document.getElementById('result-container').appendChild(scoreDiv);
 }
 
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowUp') movePlayer('up');
-    if (event.key === 'ArrowDown') movePlayer('down');
-    if (event.key === 'ArrowLeft') movePlayer('left');
-    if (event.key === 'ArrowRight') movePlayer('right');
-});
-
-function restartGame() {
-    playerPosition = { x: 0, y: 0 };
-    keysCollected = 0;
-    document.getElementById('keys-count').textContent = keysCollected;
-    createMaze();
-    renderMaze();
-}
+document.addEventListener('DOMContentLoaded', initializeQuiz);
