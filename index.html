@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mystery Maze</title>
+    <title>Quiz Application</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Mystery Maze</h1>
-    <div id="game-container">
-        <div id="maze"></div>
-        <div id="info">
-            <p>Keys Collected: <span id="keys-count">0</span></p>
-            <button id="restart-btn" onclick="restartGame()">Restart Game</button>
-        </div>
+    <div class="quiz-container">
+        <h1>Quiz</h1>
+        <form id="quiz-form">
+            <div id="questions-container"></div>
+            <button type="button" onclick="endQuiz()">End Attempt</button>
+        </form>
+        <div id="result-container"></div>
     </div>
     <script src="script.js"></script>
 </body>
