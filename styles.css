@@ -1,25 +1,50 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
+    background-color: #f0f0f0;
 }
 
-.container {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+#game-container {
     text-align: center;
 }
 
-h1 {
-    margin-bottom: 20px;
+#maze {
+    display: grid;
+    grid-template-columns: repeat(10, 40px);
+    grid-template-rows: repeat(10, 40px);
+    gap: 2px;
+    margin: 20px auto;
 }
 
-p {
-    margin: 10px 0;
+.cell {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ddd;
+}
+
+.wall {
+    background-color: #333;
+}
+
+.start {
+    background-color: #4caf50;
+}
+
+.end {
+    background-color: #f44336;
+}
+
+.key {
+    background-color: #ffeb3b;
+}
+
+#info {
+    margin-top: 20px;
 }
