@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Device Specifications</title>
+    <title>Mystery Maze</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Device Specifications</h1>
-        <p><strong>User Agent:</strong> <span id="userAgent"></span></p>
-        <p><strong>Platform:</strong> <span id="platform"></span></p>
-        <p><strong>Memory:</strong> <span id="memory"></span></p>
-        <p><strong>Screen Resolution:</strong> <span id="resolution"></span></p>
-        <a href="cpu.html">cpu info</a>
+    <h1>Mystery Maze</h1>
+    <div id="game-container">
+        <div id="maze"></div>
+        <div id="info">
+            <p>Keys Collected: <span id="keys-count">0</span></p>
+            <button id="restart-btn" onclick="restartGame()">Restart Game</button>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
